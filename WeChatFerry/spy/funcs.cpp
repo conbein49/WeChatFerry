@@ -238,9 +238,15 @@ int DownloadAttach(QWORD id, string thumb, string extra)
     QWORD localId;
     uint32_t dbIdx;
 
-    if (fs::exists(extra)) { // 第一道，不重复下载。TODO: 通过文件大小来判断
+#ifdef _WIN32
+    if (WinFileExist(extra)) {
         return 0;
     }
+#else
+    if (fs::exists(extra)) {
+        return 0;
+    }
+#endif
 
     if (GetLocalIdandDbidx(id, &localId, &dbIdx) != 0) {
         LOG_ERROR("Failed to get localId, Please check id: {}", to_string(id));
@@ -293,11 +299,17 @@ int DownloadAttach(QWORD id, string thumb, string extra)
             break;
     }
 
-    if (fs::exists(save_path)) { // 不重复下载。TODO: 通过文件大小来判断
+#ifdef _WIN32
+    if (WinFileExist(save_path)) { // 第一道，不重复下载。TODO: 通过文件大小来判断
         return 0;
     }
+#else
+    if (fs::exists(save_path)) { // 第一道，不重复下载。TODO: 通过文件大小来判断
+        return 0;
+    }
+#endif
 
-    LOG_DEBUG("path: {}", save_path);
+    LOG_INFO("path: {}", save_path);
     // 创建父目录，由于路径来源于微信，不做检查
     fs::create_directory(fs::path(save_path).parent_path().string());
 

@@ -10,6 +10,7 @@
 
 #include "log.h"
 #include "util.h"
+#include <windows.h>
 
 #pragma comment(lib, "shlwapi")
 #pragma comment(lib, "Version.lib")
@@ -344,4 +345,15 @@ WxString *NewWxStringFromWstr(const wstring &ws)
     p->ptr      = 0;
     p->clen     = 0;
     return p;
+}
+
+bool WinFileExist(string path) {
+    std::wstring wpath = String2Wstring(path);
+
+    // 使用 GetFileAttributesW() 检查文件是否存在
+    DWORD attributes = GetFileAttributesW(wpath.c_str());
+    if (attributes == INVALID_FILE_ATTRIBUTES) {
+        return false;
+    }
+    return true;
 }

@@ -249,10 +249,17 @@ bool func_send_img(char *path, char *receiver, uint8_t *out, size_t *len)
     rsp.func      = Functions_FUNC_SEND_IMG;
     rsp.which_msg = Response_status_tag;
 
+    bool fileExist = false;
+#ifdef _WIN32
+    fileExist = WinFileExist(path);
+#else
+    fileExist = fs::exists(path);
+#endif
+
     if ((path == NULL) || (receiver == NULL)) {
         LOG_ERROR("Empty path or receiver.");
         rsp.msg.status = -1;
-    } else if (!fs::exists(String2Wstring(path))) {
+    } else if (!fileExist) {
         LOG_ERROR("Path does not exists: {}", path);
         rsp.msg.status = -2;
     } else {
@@ -276,10 +283,17 @@ bool func_send_file(char *path, char *receiver, uint8_t *out, size_t *len)
     rsp.func      = Functions_FUNC_SEND_FILE;
     rsp.which_msg = Response_status_tag;
 
+    bool fileExist = false;
+#ifdef _WIN32
+    fileExist = WinFileExist(path);
+#else
+    fileExist = fs::exists(path);
+#endif
+
     if ((path == NULL) || (receiver == NULL)) {
         LOG_ERROR("Empty path or receiver.");
         rsp.msg.status = -1;
-    } else if (!fs::exists(String2Wstring(path))) {
+    } else if (!fileExist) {
         LOG_ERROR("Path does not exists: {}", path);
         rsp.msg.status = -2;
     } else {
